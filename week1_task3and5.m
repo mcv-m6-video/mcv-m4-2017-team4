@@ -16,5 +16,5 @@ function week1_task3and5()
     %imagesc(im)
     figure,imshow(im)
     hold on
-    quiver(F_est(:,:,1),F_est(:,:,2)*5,'autoscale','off');
+    quiver(F_est(:,:,1),F_est(:,:,2),'autoscale','off');
 end
