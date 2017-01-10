@@ -20,10 +20,5 @@ function [ mean_dataset, sd_dataset ] = GaussianTraining( inputFolder,dirlist,nu
     end;
     mean_dataset = mean(im_array,3);
     sd_dataset = std(im_array,0,3);
-    %Mean and standard deviation
-    %mean_dataset = uint8(cumsum_image / numberTraining);
-    %Normalization (origv - min)/(max - min) * 255.0
-    %sd_dataset = (((cumsum_image - (cumsum_image / numberTraining)).^2) / numberTraining).^(1/2);
-    %sd_dataset = uint8((sd_dataset - min(sd_dataset(:))) / (max(sd_dataset(:))-min(sd_dataset(:))) * 255);
 end
 

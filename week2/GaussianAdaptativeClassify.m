@@ -10,8 +10,8 @@ function [mean_dataset, sd_dataset,background] = GaussianAdaptativeClassify (inp
    
    img_back=background.*current_image;
    
-    mean_dataset = p*img_back+(1-p)*mean_dataset;
-    sd_dataset = sqrt(p*(img_back-mean_dataset).^2+(1-p)*sd_dataset.^2);
+   mean_dataset = (1-p)*mean_dataset+p*img_back;
+   sd_dataset = sqrt((1-p)*sd_dataset.^2)+p*(img_back-mean_dataset).^2;
 
    if(WriteResults)
        imwrite(background,strcat('./results/recursive/backgroundMask/',datasetName,'/',num2str(j),'_alpha_',num2str(alpha),'_p_',num2str(p),'.png'));
