@@ -61,25 +61,25 @@ function m4_week2_task2()
        end
        
       % estimate p, alpha with a grid search
-%        pvalue = param.minP:param.pStep:param.maxP;
-%        alpha = param.minAlpha:param.alpha:param.maxAlpha
-% 
-%        [a,p] = ndgrid(alpha, pvalue);
-%        inda=0   
-%        for indx = 1:size(a,1)
-%            for indy=1:size(a,2)
-%                i_img=1;
-%                background = zeros([imsize(1:2) length(dirList)-numberTraining+1 ]);
-%                for j = numberTraining+1:length(dirList)
-%                     [mean_dataset{i}, sd_dataset{i},background(:,:,i_img)] = GaussianAdaptativeClassify (inputFolder,...
-%                         dirList,j,param.gaussianColor,sd_dataset{i},mean_dataset{i},a(indx,indy),p(indx,indy),true,datasets(i).name);
-%                     i_img=i_img+1;
-%                end
-%                %Evaluation
-%                [TP(i,indx,indy),FP(i,indx,indy),FN(i,indx,indy),TN(i,indx,indy),F1(i,indx,indy),...
-%                    Recall(i,indx,indy),Precision(i,indx,indy)] = GaussianEvaluation(background,groundtruth);
-%            end
-%        end
+       pvalue = param.minP:param.pStep:param.maxP;
+       alpha = param.minAlpha:param.alpha:param.maxAlpha
+
+       [a,p] = ndgrid(alpha, pvalue);
+       inda=0   
+       for indx = 1:size(a,1)
+           for indy=1:size(a,2)
+               i_img=1;
+               background = zeros([imsize(1:2) length(dirList)-numberTraining+1 ]);
+               for j = numberTraining+1:length(dirList)
+                    [mean_dataset{i}, sd_dataset{i},background(:,:,i_img)] = GaussianAdaptativeClassify (inputFolder,...
+                        dirList,j,param.gaussianColor,sd_dataset{i},mean_dataset{i},a(indx,indy),p(indx,indy),true,datasets(i).name);
+                    i_img=i_img+1;
+               end
+               %Evaluation
+               [TP(i,indx,indy),FP(i,indx,indy),FN(i,indx,indy),TN(i,indx,indy),F1(i,indx,indy),...
+                   Recall(i,indx,indy),Precision(i,indx,indy)] = GaussianEvaluation(background,groundtruth);
+           end
+       end
     end   
     %% Results
 %     TP, FP, FN, TN
@@ -94,40 +94,7 @@ function m4_week2_task2()
         xlabel('p Threshold')
         ylabel('Nº Pixels')
     end
-    %%
-%     %F1 score
-%     for i=1:length(datasets)
-%         figure()
-%         plot(1:length(F1(i,:)),F1(i,:))
-%         %Max F1
-%         [y x] = max(F1(i,:))
-%         hold on
-%         plot(x,y,'o','MarkerSize',10)
-%         strmax = ['p = ',num2str((x-1)*0.1), ' | F1 Score = ',num2str(F1(i,x))];
-%         text(x,y,strmax,'HorizontalAlignment','left');
-%         %Min F1
-%         [y x] = min(F1(i,:))
-%         hold on
-%         plot(x,y,'o','MarkerSize',10)
-%         strmax = ['p = ',num2str((x-1)*0.1), ' | F1 Score = ',num2str(F1(i,x))];
-%         text(x,y,strmax,'HorizontalAlignment','left');
-%         %Plot parameters
-%     %     set(gca,'XTick',1:10:len )
-%         set(gca,'XTickLabel',param.minP:0.1:param.maxP)
-%         title(strcat('F1 Score - Recursive Gaussian modeling - "',datasets(i).name,'" Dataset'))
-%         xlabel('p Threshold')
-%         ylabel('F1 Score')
-%     end
-% 
-%     %% precision vs Recall curve & auc
-%     for i=1:length(datasets)
-%         figure()
-%         plot(Precision(i,:),Recall(i,:))
-%         title(strcat('Precision vs Recall - Recursive Gaussian modeling - "',datasets(i).name,'" Dataset',' AUC=',num2str(trapz(Recall(i,:),Precision(i,:)))))
-%         xlabel('Recall')
-%         ylabel('Precision')
-%     end
-    
+    %%    
     %F1-scores curve plots
     x=param.minP:param.pStep:param.maxP;
     figure()
