@@ -1,5 +1,5 @@
 function plot_grafics(sequence_db,task)
-    if (task==1 || task == 3)
+    if (task==1 || task == 3 || task == 4 || task ==5)
         fields = fieldnames(sequence_db);
         colors=['b','g','r'];
         figure()
@@ -8,12 +8,12 @@ function plot_grafics(sequence_db,task)
         xlabel('alphas')
         ylabel('F1 score')
         for i=1:numel(fields)
-
+            sequence_db.(fields{i}).F1_score_array(isnan(sequence_db.(fields{i}).F1_score_array))=0;
             plot(sequence_db.(fields{i}).alpha,sequence_db.(fields{i}).F1_score_array,colors(i))
         end
         legend(fields)
         hold off;
-        saveas(gcf, 'F1-score_vs_alpha', 'png')
+        saveas(gcf, 'F1-score_vs_alpha', 'fig')
 
         figure()
         title('Precision vs Recall');
@@ -22,27 +22,14 @@ function plot_grafics(sequence_db,task)
         ylabel('Precision')
         legend_info=cell(numel(fields,1));
         for i=1:numel(fields)
-
+            sequence_db.(fields{i}).Recall_array(isnan(sequence_db.(fields{i}).Recall_array))=0;
+            sequence_db.(fields{i}).Precision_array(isnan(sequence_db.(fields{i}).Precision_array))=0;
             plot(sequence_db.(fields{i}).Recall_array,sequence_db.(fields{i}).Precision_array,colors(i))
-            auc_class = trapz(sequence_db.(fields{i}).Recall_array,sequence_db.(fields{i}).Precision_array);
+            auc_class = trapz(sequence_db.(fields{i}).Recall_array(end:-1:1),sequence_db.(fields{i}).Precision_array(end:-1:1));
             legend_info{i}=strcat(fields{i},' AUC: ',sprintf('%.2f',abs(auc_class)));
         end
         legend(legend_info)
         hold off;
-        saveas(gcf, 'Precision_vs_Recall', 'png')
-
-    %     for i=1:numel(fields)
-    %         figure()
-    %         title(strcat(fields{i},' TP,FP,FP,FN'));
-    %         hold on;
-    %         plot(sequence_db.(fields{i}).alpha,sequence_db.(fields{i}).TP_array)
-    %         plot(sequence_db.(fields{i}).alpha,sequence_db.(fields{i}).TN_array)
-    %         plot(sequence_db.(fields{i}).alpha,sequence_db.(fields{i}).FP_array)
-    %         plot(sequence_db.(fields{i}).alpha,sequence_db.(fields{i}).FN_array)
-    %         
-    %         legend('TP','TN','FP','FN')
-    %         hold off;
-    %         saveas(gcf, strcat(fields{i},'_metric'), 'png')
-    %     end
+        saveas(gcf, 'Precision_vs_Recall', 'fig')
     end
 end
