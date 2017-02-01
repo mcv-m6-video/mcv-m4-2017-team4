@@ -41,7 +41,7 @@ function m4_week4_task2()
         
         gt_image=imread(strcat(gt_folder,groundtruth_name,sprintf('%06d',sequence(count_seq)),'.png'));
         gt_compensate=imtranslate(gt_image,[-Vx -Vy]);
-        imwrite(gt_image,strcat(new_gt,groundtruth_name,sprintf('%06d',sequence(count_seq)),'.png'));
+        imwrite(gt_compensate,strcat(new_gt,groundtruth_name,sprintf('%06d',sequence(count_seq)),'.png'));
         writeVideo(v_gt,gt_compensate);
         
     end

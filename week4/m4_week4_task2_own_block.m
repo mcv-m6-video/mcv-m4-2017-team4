@@ -2,7 +2,8 @@ function m4_week4_task2_own_block()
     sequence=[950:1050];
     train_folder='./traffic/input/';
     gt_folder='./optical_flow/training/flow_noc/'; 
-
+    new_folder='./traffic/input_1/';
+    new_gt='./traffic/groundtruth_1/';
     area_size=8;
     block_size=16;
     tau = 3;
@@ -17,8 +18,9 @@ function m4_week4_task2_own_block()
     image_name_pre=sprintf('in%06d',sequence(1));
     previous_frame=strcat(train_folder,image_name_pre,'.jpg');
     previous_image=imread(previous_frame);
-    
+    imwrite(previous_image,strcat(new_folder,image_name_pre,'.jpg'));
     gt_image=imread(strcat(gt_folder,groundtruth_name,sprintf('%06d',sequence(1)),'.png'));
+    imwrite(gt_image,strcat(new_gt,groundtruth_name,sprintf('%06d',sequence(1)),'.png'));
     writeVideo(v_gt,gt_image);
     
     for count_seq=2:size(sequence,2)
@@ -54,10 +56,11 @@ function m4_week4_task2_own_block()
            
             out = imtranslate(current_image, [V_mov(1) V_mov(2)]);
             previous_image=out;
-            
+            imwrite(out,strcat(new_folder,image_name_curr,'.jpg'));
             gt_image=imread(strcat(gt_folder,groundtruth_name,sprintf('%06d',sequence(count_seq)),'.png'));
             gt_compensate=imtranslate(gt_image,[V_mov(1) V_mov(2)]);
             writeVideo(v_gt,gt_compensate);
+            imwrite(gt_compensate,strcat(new_gt,groundtruth_name,sprintf('%06d',sequence(count_seq)),'.png'));
             writeVideo(v,out);
         end
         
