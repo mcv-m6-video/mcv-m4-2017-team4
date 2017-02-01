@@ -3,18 +3,24 @@ function m4_week4_task2_own_block()
     train_folder='./traffic/input/';
     gt_folder='./optical_flow/training/flow_noc/'; 
 
-    area_size=16;
+    area_size=8;
     block_size=16;
     tau = 3;
     task=1.1;
     opticalflow='LK';
     videostabilization='Own';
-    v = VideoWriter('traffic_own')
-    open(v)
+    v = VideoWriter('traffic_own');
+    open(v);
+    v_gt = VideoWriter('traffic_own_gt');
+    open(v_gt);
     
     image_name_pre=sprintf('in%06d',sequence(1));
     previous_frame=strcat(train_folder,image_name_pre,'.jpg');
     previous_image=imread(previous_frame);
+    
+    gt_image=imread(strcat(gt_folder,groundtruth_name,sprintf('%06d',sequence(1)),'.png'));
+    writeVideo(v_gt,gt_image);
+    
     for count_seq=2:size(sequence,2)
         if(strcmp(opticalflow,'LK'))
             opticFlow = opticalFlowLK;
@@ -49,6 +55,9 @@ function m4_week4_task2_own_block()
             out = imtranslate(current_image, [V_mov(1) V_mov(2)]);
             previous_image=out;
             
+            gt_image=imread(strcat(gt_folder,groundtruth_name,sprintf('%06d',sequence(count_seq)),'.png'));
+            gt_compensate=imtranslate(gt_image,[V_mov(1) V_mov(2)]);
+            writeVideo(v_gt,gt_compensate);
             writeVideo(v,out);
         end
         

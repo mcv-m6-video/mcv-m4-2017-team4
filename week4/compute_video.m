@@ -1,4 +1,4 @@
-function [sequence_db]=compute_video(color_space,sequence_db,groundtruth_path,groundtruth_name,video_object)
+function [sequence_db]=compute_video(sequence_db,groundtruth_path,groundtruth_name,input_path,input_name)
     fields = fieldnames(sequence_db);
     
     for i=1:numel(fields)
@@ -23,21 +23,14 @@ function [sequence_db]=compute_video(color_space,sequence_db,groundtruth_path,gr
       numb_frames=sequence_part.frames(2)-sequence_part.frames(1)+1;
       frames_sequence=sequence_part.frames(1):sequence_part.frames(2);
       train_frames=round(numb_frames/2);
-      image_res=video_object(1).cdata;
-      if(strcmp(color_space,'YUV'))
-        image_res=rgb2ycbcr(image_res);
-      elseif(strcmp(color_space,'HSV'))
-        image_res=rgb2hsv(image_res);
-      end
+      image_res=imread(strcat(sequence_part.path,input_path,input_name,sprintf('%06d',sequence_part.frames(1)),'.jpg'));%input image name
       train_sequence_image=double(zeros(size(image_res,1),size(image_res,2),size(image_res,3),train_frames));
       %train part
       for count_train=1:train_frames
-          train_image=video_object(count_train).cdata;
-          if(strcmp(color_space,'YUV'))
-              train_image=rgb2ycbcr(train_image);
-          elseif(strcmp(color_space,'HSV'))
-              train_image=rgb2hsv(train_image);
-          end
+          
+          train_frame=frames_sequence(1);
+          frames_sequence(1)=[];%erase the index from the range
+          train_image=imread(strcat(sequence_part.path,input_path,input_name,sprintf('%06d',train_frame),'.jpg'));
           
           train_sequence_image(:,:,:,count_train)=train_image;
       end
@@ -45,8 +38,6 @@ function [sequence_db]=compute_video(color_space,sequence_db,groundtruth_path,gr
       size_train=size(size(train_sequence_image));
       mean_value=mean(train_sequence_image,size_train(end));
       std_value=std(double(train_sequence_image),0,size_train(end));
-      imwrite(uint8(mean_value),strcat(fields{i},'_mean.png'))
-      imwrite(uint8(std_value),strcat(fields{i},'_std.png'))
       
       %test part
        for count_alpha =1:size(sequence_part.alpha,2)
@@ -55,17 +46,16 @@ function [sequence_db]=compute_video(color_space,sequence_db,groundtruth_path,gr
           sequence_db.(fields{i}).TN=0;
           sequence_db.(fields{i}).FP=0;
           sequence_db.(fields{i}).FN=0;
-          for count_test=train_frames+1:size(frames_sequence,2)-1
+          for count_test=1:size(frames_sequence,2)
               test_frame=frames_sequence(count_test);
-              test_image=video_object(count_test).cdata;
-              if(strcmp(color_space,'YUV'))
-                test_image=rgb2ycbcr(test_image);
-              elseif(strcmp(color_space,'HSV'))
-                test_image=rgb2hsv(test_image);
-              end
+              test_image=imread(strcat(sequence_part.path,input_path,input_name,sprintf('%06d',test_frame),'.jpg'));
               gt_image=imread(strcat(sequence_part.path,groundtruth_path,groundtruth_name,sprintf('%06d',test_frame),'.png'));
-              train_image_res=abs(double(test_image(:,:,1))-mean_value(:,:,1))>=alpha.*(std_value(:,:,1)+2)&abs(double(test_image(:,:,2))-mean_value(:,:,2))>=alpha.*(std_value(:,:,2)+2)&abs(double(test_image(:,:,3))-mean_value(:,:,3))>=alpha.*(std_value(:,:,3)+2);
-              [TP FP FN TN] = compare_images(train_image_res, gt_image);
+              test_image_res=abs(double(test_image(:,:,1))-mean_value(:,:,1))>=alpha.*(std_value(:,:,1)+2)&abs(double(test_image(:,:,2))-mean_value(:,:,2))>=alpha.*(std_value(:,:,2)+2)&abs(double(test_image(:,:,3))-mean_value(:,:,3))>=alpha.*(std_value(:,:,3)+2);
+              
+
+              test_image_res=computed_morphology(test_image_res);
+              
+              [TP FP FN TN] = compare_images(test_image_res, gt_image);
               sequence_db.(fields{i}).TP=sequence_db.(fields{i}).TP+TP;
               sequence_db.(fields{i}).TN=sequence_db.(fields{i}).TN+TN;
               sequence_db.(fields{i}).FP=sequence_db.(fields{i}).FP+FP;
