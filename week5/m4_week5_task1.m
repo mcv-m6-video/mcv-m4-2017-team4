@@ -3,19 +3,34 @@ function m4_week5_task1()
     params.rho=0.05; 
     params.alpha=2.5;
     
+
     
     
     
     sequence_db=struct;
-    sequence_db.frames=[950 1050];
-    sequence_db.path='./traffic/';
-    params.reference=[1 62; 133 239; 150 1;320 111];
-    sequence=[sequence_db.frames(1):sequence_db.frames(2)];
-%     sequence_db.frames=[1050, 1350];
-%     sequence_db.path='./highway/';
-%     params.reference=[1 62; 133 239; 150 1;320 111];
+    
+    
+%     sequence_db.frames=[950 1050];
+%     sequence_db.path='./traffic/';
+%     params.reference=[20 83; 136 1; 135 240;320 111];
 %     sequence=[sequence_db.frames(1):sequence_db.frames(2)];
+%     params.time=3.0/30.0;
+%     params.km=3.6;
+%     params.pixel=9.0/78.0;
+    
+    
+    
+    
+    sequence_db.frames=[1050, 1350];
+    sequence_db.path='./highway/';
+    params.reference=[10.0522 190.8483;190.7488 24.0821;273.9328 20.1020;263.9826 239.4055];
+    params.fps=25;
+    params.km=3.6;
+    params.pixel=10/13;
+    sequence=[sequence_db.frames(1):sequence_db.frames(2)];
 
+    
+    
     train_folder=strcat(sequence_db.path,'input/');
     gt_folder=strcat(sequence_db.path,'groundtruth/');
     
@@ -32,12 +47,15 @@ function m4_week5_task1()
 
     
     [params.mean,params.var]=compute_mean_std(sequence_db,input_path,input_name);
+    
     % Create System objects used for reading video, detecting moving objects,
     % and displaying the results.
     obj = setupSystemObjects();
     tracks = initializeTracks(); % Create an empty array of tracks.
 
     nextId = 1; % ID of the next track
+    trackedObjs = [];
+    H=homografia(params);
     for count_seq=1:size(sequence,2)
 
         'SEQUENCIA'
@@ -48,6 +66,9 @@ function m4_week5_task1()
         current_frame=strcat(train_folder,image_name_curr,'.jpg');
         frame=imread(current_frame);
 
+        
+
+        
         [centroids, bboxes, mask,params] = detectObjects(frame,params);
         predictNewLocationsOfTracks();
         [assignments, unassignedTracks, unassignedDetections] = detectionToTrackAssignment();
@@ -169,6 +190,9 @@ function m4_week5_task1()
             tracks(trackIdx).totalVisibleCount = ...
                 tracks(trackIdx).totalVisibleCount + 1;
             tracks(trackIdx).consecutiveInvisibleCount = 0;
+            
+            trackIdx_found = tracks(trackIdx).id;
+            trackedObjs{trackIdx_found}.centroid(end+1, :) = centroid;
         end
     end
     function updateUnassignedTracks()
@@ -196,7 +220,14 @@ function m4_week5_task1()
         % Find the indices of 'lost' tracks.
         lostInds = (ages < ageThreshold & visibility < 0.6) | ...
             [tracks(:).consecutiveInvisibleCount] >= invisibleForTooLong;
-
+        if lostInds > 0
+            for speedIdx = 1:length(lostInds)
+                trackHistorial = trackedObjs{tracks(lostInds(speedIdx)).id};
+                speed = compute_speed(trackHistorial, H,params);
+                trackedObjs{tracks(lostInds(speedIdx)).id}.speed = speed;
+                
+            end
+        end
         % Delete lost tracks.
         tracks = tracks(~lostInds);
     end
@@ -228,6 +259,13 @@ function m4_week5_task1()
 
             % Increment the next id.
             nextId = nextId + 1;
+            object.id = newTrack.id;
+            object.centroid = centroid;
+            if length(trackedObjs) < object.id
+                trackedObjs{end+1} = object;
+            else
+                trackedObjs{object.id} = object;
+            end
         end
     end
 
@@ -246,6 +284,21 @@ function m4_week5_task1()
                 [tracks(:).totalVisibleCount] > minVisibleCount;
             reliableTracks = tracks(reliableTrackInds);
 
+            
+            speeds={[]};
+            for i=1:length(reliableTracks)
+                % Speed estimation
+                trackHistorial = trackedObjs{reliableTracks(i).id};
+                if size(trackHistorial.centroid, 1) > 1
+                    speed = compute_speed(trackHistorial, H,params);
+                    trackedObjs{reliableTracks(i).id}.speed = speed;
+                    speeds{i} = ['  ' num2str(speed)];
+                else
+                    speeds{i} = ['  ' num2str(0)];
+                end
+            end
+            
+            
             % Display the objects. If an object has not been detected
             % in this frame, display its predicted bounding box.
             if ~isempty(reliableTracks)
@@ -263,7 +316,7 @@ function m4_week5_task1()
                     [reliableTracks(:).consecutiveInvisibleCount] > 0;
                 isPredicted = cell(size(labels));
                 isPredicted(predictedTrackInds) = {' predicted'};
-                labels = strcat(labels, isPredicted);
+                labels = strcat(labels,speeds', isPredicted);
 
                 % Draw the objects on the frame.
                 frame = insertObjectAnnotation(frame, 'rectangle', ...
