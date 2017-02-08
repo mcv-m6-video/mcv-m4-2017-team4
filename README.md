@@ -35,6 +35,10 @@ final Road traffic monitoring:</p>
 * [Project Report]()
 
 ## Results obtained
+
+In the following video we can see the different result that we obtain in this final part of the project.
+With our video we also include the mask without some of the methods to see the influence of these ones. 
+
 Video of Traffic:
  <video width="320" height="240" controls>
   <source src="videos/video_traffic.mp4" type="video/mp4">
@@ -67,8 +71,8 @@ Av. de Serragalliners, 112, 08193 Cerdanyola del Vallès, Barcelona
 <iframe src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d1056.4726676988516!2d2.1129707569473566!3d41.5008951892322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sgoogle+maps!5e0!3m2!1sen!2ses!4v1486580514671" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
 
 ## Conclusions
-As we can see on our video, in real case all the techniques that we have learn are necessary to improve the result. Because the influence of the daylight we can have problem of shadows or because the wind the camera could jig. 
 
+As we can see on our video, in real case all the techniques that we have learn are necessary to improve the result. Because the influence of the daylight we can have problem of shadows or because the wind the camera could jig so these methods show they utility when comparing different situation of the open world. 
 
 ## Team 4 members
 * Jose Luis Gómez Zurita [CVC -ADAS](http://adas.cvc.uab.es/elektra/enigma-team/jose-luis-gomez/), [LinkedIn](https://www.linkedin.com/in/jose-luis-gomez-zurita-7101b1130)
