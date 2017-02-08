@@ -35,13 +35,16 @@ final Road traffic monitoring:</p>
 * [Project Report]()
 
 ## Results obtained
-In the following video we can see the different  result that we obtain in this final part of the project.
-With our video we also include  the mask without some of the methods to see the influence of these ones. 
-
 Video of Traffic:
  <video width="320" height="240" controls>
   <source src="videos/video_traffic.mp4" type="video/mp4">
 </video> 
+Using Particle filter:
+ <video width="320" height="240" controls>
+  <source src="videos/ 	traffic_PartFilter.mp4" type="video/mp4">
+</video> 
+<p align="justify">We can see how don't work properly and the tracking system can't mantain properly the tracking of the vehicles, so need to be adjusted because we use the main system like the kalman filter and doesn't seem to be compatible entirely in order to mantain ID and tracks properly.</p>
+
 Video of Highway:
  <video width="320" height="240" controls>
   <source src="videos/video_highway.mp4" type="video/mp4">
@@ -58,11 +61,13 @@ Mask without the shadow removal and stabilization of own video:
  <video width="320" height="240" controls>
   <source src="videos/mask_own_nothing.mp4" type="video/mp4">
 </video> 
+
 Position of our video:
 Av. de Serragalliners, 112, 08193 Cerdanyola del Vallès, Barcelona
 <iframe src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d1056.4726676988516!2d2.1129707569473566!3d41.5008951892322!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sgoogle+maps!5e0!3m2!1sen!2ses!4v1486580514671" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
+
 ## Conclusions
-As we can see on our video, in real case all the techniques that we have learn are necessary to improve the result. Because the influence of the daylight we can have problem of shadows or because the wind the camera could jig so this methods show they utility when comapring differents situation of the open world. 
+As we can see on our video, in real case all the techniques that we have learn are necessary to improve the result. Because the influence of the daylight we can have problem of shadows or because the wind the camera could jig. 
 
 
 ## Team 4 members
