@@ -31,8 +31,8 @@ final Road traffic monitoring:</p>
 
 ## Documentation
 
-* Slides of the project - [Project Slides]()
-* Report - [Project Report]()
+* [Slides of the project]()
+* [Project Report]()
 
 ## Results obtained
 
