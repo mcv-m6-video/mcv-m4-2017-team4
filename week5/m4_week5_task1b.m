@@ -1,34 +1,67 @@
 function m4_week5_task1b()
+    sequence_db=struct;
     params=struct;
     params.rho=0.05; 
     params.alpha=2.5;
     params.dt = 1;
     sequence_db=struct;    
     
+    hbm = vision.BlockMatcher('ReferenceFrameSource', 'Input port', 'BlockSize', [15 15]);
+    hbm.OutputValue = 'Horizontal and vertical components in complex form';  
+       
+    
+    params.shadow_active=true;
+    params.alpha_shadow=0.7;
+    params.beta_shadow=1.4;
+    params.video_stabilitzation=true;
+    params.rho=0.05; 
+    params.alpha=1.0; 
+    
+    
+    sequence_db.frames=[1 100];
+    sequence_db.path='./own/';
+    params.reference=[106 345; 268 42;309 42;452 348];
+    params.fps=30;
+    params.km=3.6;
+    params.pixel=0.3099%0.2295%0.1836;
+    sequence=[100:200];
+
+%     params.video_stabilitzation=false;    
+%     params.shadow_active=false;
+%     params.rho=0.05; 
+%     params.alpha=2.5;    
+%     
 %     sequence_db.frames=[950 1050];
 %     sequence_db.path='./traffic/';
 %     params.reference=[20 83; 136 1; 135 240;320 111];
-%     sequence=[sequence_db.frames(1):sequence_db.frames(2)];
-%     params.time=3.0/30.0;
+%     params.fps=25;
 %     params.km=3.6;
-%     params.pixel=9.0/78.0;
-       
-    sequence_db.frames=[1050, 1350];
-    sequence_db.path='./highway/';
-    params.reference=[10.0522 190.8483;190.7488 24.0821;273.9328 20.1020;263.9826 239.4055];
-    params.fps=25;
-    params.km=3.6;
-    params.pixel=10/13;
-    sequence=[sequence_db.frames(1):sequence_db.frames(2)];
+%     params.pixel=4.5/125;
+%     sequence=[sequence_db.frames(1):sequence_db.frames(2)];
+    
+    
+%     params.video_stabilitzation=false;      
+%     params.shadow_active=false;
+%     params.rho=0.05; 
+%     params.alpha=2.5;   
+%     sequence_db.frames=[1050, 1350];
+%     sequence_db.path='./highway/';
+%     params.reference=[10.0522 190.8483;190.7488 24.0821;273.9328 20.1020;263.9826 239.4055];
+%     params.fps=25;
+%     params.km=3.6;
+%     params.pixel=10/13;
+%     sequence=[sequence_db.frames(1):sequence_db.frames(2)];
+
+    
     
     train_folder=strcat(sequence_db.path,'input/');
-    gt_folder=strcat(sequence_db.path,'groundtruth/');  
+    gt_folder=strcat(sequence_db.path,'groundtruth/');
+    
+    
     
     input_path='input/';
     input_name='in';
-%     new_folder='./traffic/input/';
-%     new_gt='./traffic/groundtruth/';
-      
+    
     [params.mean,params.var]=compute_mean_std(sequence_db,input_path,input_name);
     
     % Create System objects used for reading video, detecting moving objects,
@@ -36,9 +69,14 @@ function m4_week5_task1b()
     obj = setupSystemObjects();
     tracks = initializeTracks(); % Create an empty array of tracks.
 
+    speed_meter=cell(1,1);
     nextId = 1; % ID of the next track
+    real_count_tracks=1;
     trackedObjs = [];
     H=homografia(params);
+    image_name_curr=sprintf('in%06d',sequence(1));
+    current_frame=strcat(train_folder,image_name_curr,'.jpg');
+    auxframe=imread(current_frame);
     for count_seq=1:size(sequence,2)
 
         'SEQUENCIA'
@@ -48,7 +86,14 @@ function m4_week5_task1b()
         image_name_curr=sprintf('in%06d',sequence(count_seq));
         current_frame=strcat(train_folder,image_name_curr,'.jpg');
         frame=imread(current_frame);
- 
+        if(params.video_stabilitzation)
+            imagen_previa=auxframe;
+            motion = step(hbm, double(rgb2gray(imagen_previa)), double(rgb2gray(frame)));
+            Vx = real(mode(mode(motion)));
+            Vy = imag(mode(mode(motion)));
+            frame = imtranslate(frame,[-Vx -Vy]);
+            auxframe=frame;
+        end
         [centroids, bboxes, mask, params] = detectObjects(frame, params);
         predictNewLocationsOfTracks(count_seq);
         [assignments, unassignedTracks, unassignedDetections] = detectionToTrackAssignment();
@@ -60,7 +105,15 @@ function m4_week5_task1b()
 
         displayTrackingResults();
     end
-
+    disp('num_cars')
+    disp(real_count_tracks-1)
+    disp('speed')
+    for count_speed=1:real_count_tracks-1
+        disp('car')
+        disp(count_speed)
+        disp('mean_speed')
+        disp(mean(speed_meter{count_speed}))
+    end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function obj = setupSystemObjects()
         % Initialize Video I/O
@@ -95,6 +148,7 @@ function m4_week5_task1b()
         % create an empty array of tracks
         tracks = struct(...
             'id', {}, ...
+            'real_id', 0, ...
             'bbox', {}, ...
             'particleFilter', {}, ...
             'centroid', {}, ...
@@ -113,7 +167,7 @@ function m4_week5_task1b()
 %         mask = imopen(mask, strel('rectangle', [3,3]));
 %         mask = imclose(mask, strel('rectangle', [15, 15]));
 %         mask = imfill(mask, 'holes');
-        [mask,params] = adaptative_model(frame,params);
+         [mask,params] = adaptative_model(frame,imagen_previa,params);
 
         % Perform blob analysis to find connected components.
         [~, centroids, bboxes] = obj.blobAnalyser.step(mask);
@@ -244,6 +298,7 @@ function m4_week5_task1b()
             % Create a new track.
             newTrack = struct(...
                 'id', nextId, ...
+                'real_id', 0, ...
                 'bbox', bbox, ...
                 'particleFilter', particleFilter, ...
                 'centroid', centroid, ...
@@ -274,7 +329,14 @@ function m4_week5_task1b()
 
         minVisibleCount = 8;
         if ~isempty(tracks)
-
+            %update the new cars
+            for count_i=1:length(tracks)
+                if tracks(count_i).totalVisibleCount> minVisibleCount && tracks(count_i).real_id ==0
+                    tracks(count_i).real_id=real_count_tracks;
+                    speed_meter{tracks(count_i).real_id}=[];
+                    real_count_tracks=real_count_tracks+1;
+                end
+            end
             % Noisy detections tend to result in short-lived tracks.
             % Only display tracks that have been visible for more than
             % a minimum number of frames.
@@ -288,6 +350,7 @@ function m4_week5_task1b()
                 if size(trackHistorial.centroid, 1) > 1
                     speed = compute_speed(trackHistorial, H,params);
                     trackedObjs{reliableTracks(i).id}.speed = speed;
+                    speed_meter{reliableTracks(i).real_id}=[speed_meter{reliableTracks(i).real_id},speed];
                     speeds{i} = ['  ' num2str(speed)];
                 else
                     speeds{i} = ['  ' num2str(0)];
