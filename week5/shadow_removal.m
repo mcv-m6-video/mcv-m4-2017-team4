@@ -1,6 +1,6 @@
-function imageShadowRemoved=shadow_removal(imRGB,binMask,previous_image)
-    alpha = 0.5;
-    beta = 1.4;
+function imageShadowRemoved=shadow_removal(imRGB,binMask,previous_image,params)
+    alpha = params.alpha_shadow;
+    beta = params.beta_shadow;
     prev_image = previous_image;
     image = imRGB;
     mask = repmat(binMask, [1, 1, 3]);
