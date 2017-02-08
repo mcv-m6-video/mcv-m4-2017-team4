@@ -2,23 +2,27 @@ function m4_week5_task1()
     sequence_db=struct;
     params=struct;
     
+    hbm = vision.BlockMatcher('ReferenceFrameSource', 'Input port', 'BlockSize', [15 15]);
+    hbm.OutputValue = 'Horizontal and vertical components in complex form';  
+       
     
-    
-    params.shadow_active=true;
+    params.shadow_active=false;
+    params.alpha_shadow=0.7;
+    params.beta_shadow=1.4;
+    params.video_stabilitzation=false;
     params.rho=0.05; 
-    params.alpha=1.5;    
+    params.alpha=2.5; 
     
-    sequence_db.frames=[1 100];
+    
+    sequence_db.frames=[1 200];
     sequence_db.path='./own/';
-%     params.reference=[212 689; 554 44;604 44; 909 695];
     params.reference=[106 345; 268 42;309 42;452 348];
     params.fps=30;
     params.km=3.6;
-    params.pixel=0.2295%0.1836;
-    sequence=[100:200];
-    hbm = vision.BlockMatcher('ReferenceFrameSource', 'Input port', 'BlockSize', [15 15]);
-    hbm.OutputValue = 'Horizontal and vertical components in complex form';  
-    
+    params.pixel=0.3099%0.2295%0.1836;
+    sequence=[1:1604];
+
+%     params.video_stabilitzation=false;    
 %     params.shadow_active=false;
 %     params.rho=0.05; 
 %     params.alpha=2.5;    
@@ -32,7 +36,7 @@ function m4_week5_task1()
 %     sequence=[sequence_db.frames(1):sequence_db.frames(2)];
     
     
-    
+%     params.video_stabilitzation=false;      
 %     params.shadow_active=false;
 %     params.rho=0.05; 
 %     params.alpha=2.5;   
@@ -73,17 +77,19 @@ function m4_week5_task1()
 
         'SEQUENCIA'
         disp(sequence(count_seq))
-        imagen_previa=auxframe;
+       
         % Read in new frame
         image_name_curr=sprintf('in%06d',sequence(count_seq));
         current_frame=strcat(train_folder,image_name_curr,'.jpg');
         frame=imread(current_frame);
-        
-        motion = step(hbm, double(rgb2gray(imagen_previa)), double(rgb2gray(frame)));
-        Vx = real(mode(mode(motion)));
-        Vy = imag(mode(mode(motion)));
-        frame = imtranslate(frame,[-Vx -Vy]);
-        auxframe=frame;
+        imagen_previa=auxframe;
+        if(params.video_stabilitzation)
+            motion = step(hbm, double(rgb2gray(imagen_previa)), double(rgb2gray(frame)));
+            Vx = real(mode(mode(motion)));
+            Vy = imag(mode(mode(motion)));
+            frame = imtranslate(frame,[-Vx -Vy]);
+            auxframe=frame;
+        end
         
 
         
@@ -118,7 +124,9 @@ function m4_week5_task1()
         % and one to display the foreground mask.
         obj.videoPlayer = vision.VideoPlayer('Position', [20, 400, 700, 400]);
         obj.maskPlayer = vision.VideoPlayer('Position', [740, 400, 700, 400]);
-
+        
+        obj.videoWriter = vision.VideoFileWriter('./own/video_own_nothing.mp4','FileFormat','MPEG4');
+        obj.maskWriter = vision.VideoFileWriter('./own/mask_own_nothing.mp4','FileFormat','MPEG4');
         % Create System objects for foreground detection and blob analysis
 
         % The foreground detector is used to segment moving objects from
@@ -367,5 +375,7 @@ function m4_week5_task1()
         % Display the mask and the frame.
         obj.maskPlayer.step(mask);
         obj.videoPlayer.step(frame);
+        step(obj.videoWriter,frame);
+        step(obj.maskWriter,mask);
     end
 end 

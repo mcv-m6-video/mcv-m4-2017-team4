@@ -86,8 +86,8 @@ function m4_week5_task1b()
         image_name_curr=sprintf('in%06d',sequence(count_seq));
         current_frame=strcat(train_folder,image_name_curr,'.jpg');
         frame=imread(current_frame);
+        imagen_previa=auxframe;
         if(params.video_stabilitzation)
-            imagen_previa=auxframe;
             motion = step(hbm, double(rgb2gray(imagen_previa)), double(rgb2gray(frame)));
             Vx = real(mode(mode(motion)));
             Vy = imag(mode(mode(motion)));
