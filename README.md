@@ -1,6 +1,7 @@
 # Video Surveillance for Road Traffic Monitoring
 
-<p align="justify"><b>Objectives:</b> The goal of this project is to learn the basic concepts and techniques related to video sequences
+<p align="justify"><b>Objectives:</b> The goal of this project is to learn the basic
+concepts and techniques related to video sequences
 processing, mainly for surveillance applications. We will focus on video sequences
 from outdoor scenarios, with the application of traffic monitoring in mind. The main
 techniques of video processing will be applied in the context of video surveillance: moving
@@ -22,8 +23,21 @@ video analysis.</p>
 <p align="justify">This work is composed by 5 sessions, which one have its goals in order to step bu step perform the
 final Road traffic monitoring:</p>
 
-*   Session 1: Assessment of Foreground Extraction and Optical Flow.
-*   Session 2: Background estimation.
-*   Session 3: Foreground segmentation.
-*   Session 4: Video Stabilization.
-*   Session 5: Region tracking.
+*   **Session 1:** Assessment of Foreground Extraction and Optical Flow.
+*   **Session 2:** Background estimation.
+*   **Session 3:** Foreground segmentation.
+*   **Session 4:** Video Stabilization.
+*   **Session 5:** Region tracking.
+
+## Documentation
+
+* Slides of the project - [Project Slides]()
+* Report - [Project Report]()
+
+## Results obtained
+
+## Conclusions
+
+## Team 4 members
+* Jose Luis Gómez Zurita [CVC -ADAS](http://adas.cvc.uab.es/elektra/enigma-team/jose-luis-gomez/), [LinkIn] (https://www.linkedin.com/in/jose-luis-gomez-zurita-7101b1130?trk=nav_responsive_tab_profile)
+* Luis Lebron Casas
