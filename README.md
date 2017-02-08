@@ -35,8 +35,8 @@ final Road traffic monitoring:</p>
 * [Project Report]()
 
 ## Results obtained
-In the following video we can see the differents result that we obtain in this final part of the project.
-With our video we also inlude the mask without some of the methods to see the influence of these ones. 
+In the following video we can see the different  result that we obtain in this final part of the project.
+With our video we also include  the mask without some of the methods to see the influence of these ones. 
 
 Video of Traffic:
  <video width="320" height="240" controls>
