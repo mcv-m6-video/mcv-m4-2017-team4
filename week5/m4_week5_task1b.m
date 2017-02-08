@@ -40,17 +40,17 @@ function m4_week5_task1b()
 %     sequence=[sequence_db.frames(1):sequence_db.frames(2)];
     
     
-%     params.video_stabilitzation=false;      
-%     params.shadow_active=false;
-%     params.rho=0.05; 
-%     params.alpha=2.5;   
-%     sequence_db.frames=[1050, 1350];
-%     sequence_db.path='./highway/';
-%     params.reference=[10.0522 190.8483;190.7488 24.0821;273.9328 20.1020;263.9826 239.4055];
-%     params.fps=25;
-%     params.km=3.6;
-%     params.pixel=10/13;
-%     sequence=[sequence_db.frames(1):sequence_db.frames(2)];
+    params.video_stabilitzation=false;      
+    params.shadow_active=false;
+    params.rho=0.05; 
+    params.alpha=2.5;   
+    sequence_db.frames=[1050, 1350];
+    sequence_db.path='./highway/';
+    params.reference=[10.0522 190.8483;190.7488 24.0821;273.9328 20.1020;263.9826 239.4055];
+    params.fps=25;
+    params.km=3.6;
+    params.pixel=10/13;
+    sequence=[sequence_db.frames(1):sequence_db.frames(2)];
 
     
     
@@ -179,7 +179,7 @@ function m4_week5_task1b()
             uCmd(1) = 0.7*abs(sin(count_seq)) + 0.1;  % linear velocity
             uCmd(2) = 0.08*cos(count_seq);            % angular velocity
             % Predict the current location of the track.
-            [statePred, covPred] = predict(tracks(i).particleFilter,params.dt,uCmd);
+            [statePred, covPred] = predict(tracks(i).particleFilter);
 
             % Shift the bounding box so that its center is at
             % the predicted location.
@@ -201,7 +201,7 @@ function m4_week5_task1b()
         end
 
         % Solve the assignment problem.
-        costOfNonAssignment = 20;
+        costOfNonAssignment = 40;
         [assignments, unassignedTracks, unassignedDetections] = ...
             assignDetectionsToTracks(cost, costOfNonAssignment);
     end
@@ -216,7 +216,7 @@ function m4_week5_task1b()
 
             % Correct the estimate of the object's location
             % using the new detection.
-            correct(tracks(trackIdx).particleFilter, [centroid 0]);
+            correct(tracks(trackIdx).particleFilter, centroid);
 
             % Replace predicted bounding box with detected
             % bounding box.
@@ -248,8 +248,8 @@ function m4_week5_task1b()
             return;
         end
 
-        invisibleForTooLong = 3;
-        ageThreshold = 8;
+        invisibleForTooLong = 4;
+        ageThreshold = 10;
 
         % Compute the fraction of the track's age for which it was visible.
         ages = [tracks(:).age];
@@ -283,15 +283,15 @@ function m4_week5_task1b()
             % Create a Particle filter object.
             particleFilter = robotics.ParticleFilter;
             
-            initialize(particleFilter, 5000, [centroid(1:2),0 , 0, 0, 0], eye(6), 'CircularVariables',[0 0 1 0 0 0]);
+            initialize(particleFilter, 50000, centroid(1:2), eye(2));
             particleFilter.StateEstimationMethod = 'mean';
             particleFilter.ResamplingMethod = 'systematic';
 
             % StateTransitionFcn defines how particles evolve without measurement
-            particleFilter.StateTransitionFcn = @CarStateTransition;
+            particleFilter.StateTransitionFcn = @robotics.algs.gaussianMotion %@CarStateTransition;
 
             % MeasurementLikelihoodFcn defines how measurement affect the our estimation
-            particleFilter.MeasurementLikelihoodFcn = @CarMeasurementLikelihood;
+            particleFilter.MeasurementLikelihoodFcn = @robotics.algs.fullStateMeasurement%@CarMeasurementLikelihood;
 
             % Last best estimation for x, y and theta
             lastBestGuess = [0 0 0];
