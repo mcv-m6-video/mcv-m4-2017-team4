@@ -39,5 +39,5 @@ final Road traffic monitoring:</p>
 ## Conclusions
 
 ## Team 4 members
-* Jose Luis Gómez Zurita [CVC -ADAS](http://adas.cvc.uab.es/elektra/enigma-team/jose-luis-gomez/), [LinkedIn] (https://www.linkedin.com/in/jose-luis-gomez-zurita-7101b1130?trk=nav_responsive_tab_profile)
+* Jose Luis Gómez Zurita [CVC -ADAS](http://adas.cvc.uab.es/elektra/enigma-team/jose-luis-gomez/), [LinkedIn](https://www.linkedin.com/in/jose-luis-gomez-zurita-7101b1130)
 * Luis Lebron Casas
