@@ -38,6 +38,10 @@ final Road traffic monitoring:</p>
 
 ## Conclusions
 
+ <video width="320" height="240" controls>
+  <source src="videos/video_traffic.mp4" type="video/mp4">
+</video> 
+
 ## Team 4 members
 * Jose Luis Gómez Zurita [CVC -ADAS](http://adas.cvc.uab.es/elektra/enigma-team/jose-luis-gomez/), [LinkedIn](https://www.linkedin.com/in/jose-luis-gomez-zurita-7101b1130)
 * Luis Lebron Casas
