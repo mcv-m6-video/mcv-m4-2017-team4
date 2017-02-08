@@ -1,26 +1,41 @@
 function m4_week5_task1()
-    params=struct;
-    params.rho=0.05; 
-    params.alpha=2.5;
-    
-
-    
-    
-    
     sequence_db=struct;
+    params=struct;
     
     
-    sequence_db.frames=[950 1050];
-    sequence_db.path='./traffic/';
-    params.reference=[20 83; 136 1; 135 240;320 111];
-    params.fps=25;
+    
+    params.shadow_active=true;
+    params.rho=0.05; 
+    params.alpha=1.5;    
+    
+    sequence_db.frames=[1 100];
+    sequence_db.path='./own/';
+%     params.reference=[212 689; 554 44;604 44; 909 695];
+    params.reference=[106 345; 268 42;309 42;452 348];
+    params.fps=30;
     params.km=3.6;
-    params.pixel=4.5/125;
-    sequence=[sequence_db.frames(1):sequence_db.frames(2)];
+    params.pixel=0.2295%0.1836;
+    sequence=[100:200];
+    hbm = vision.BlockMatcher('ReferenceFrameSource', 'Input port', 'BlockSize', [15 15]);
+    hbm.OutputValue = 'Horizontal and vertical components in complex form';  
+    
+%     params.shadow_active=false;
+%     params.rho=0.05; 
+%     params.alpha=2.5;    
+%     
+%     sequence_db.frames=[950 1050];
+%     sequence_db.path='./traffic/';
+%     params.reference=[20 83; 136 1; 135 240;320 111];
+%     params.fps=25;
+%     params.km=3.6;
+%     params.pixel=4.5/125;
+%     sequence=[sequence_db.frames(1):sequence_db.frames(2)];
     
     
     
-    
+%     params.shadow_active=false;
+%     params.rho=0.05; 
+%     params.alpha=2.5;   
 %     sequence_db.frames=[1050, 1350];
 %     sequence_db.path='./highway/';
 %     params.reference=[10.0522 190.8483;190.7488 24.0821;273.9328 20.1020;263.9826 239.4055];
@@ -51,16 +66,24 @@ function m4_week5_task1()
     real_count_tracks=1;
     trackedObjs = [];
     H=homografia(params);
-    for count_seq=1:size(sequence,2)
+    image_name_curr=sprintf('in%06d',sequence(1));
+    current_frame=strcat(train_folder,image_name_curr,'.jpg');
+    auxframe=imread(current_frame);
+    for count_seq=2:size(sequence,2)
 
         'SEQUENCIA'
         disp(sequence(count_seq))
-
+        imagen_previa=auxframe;
         % Read in new frame
         image_name_curr=sprintf('in%06d',sequence(count_seq));
         current_frame=strcat(train_folder,image_name_curr,'.jpg');
         frame=imread(current_frame);
-
+        
+        motion = step(hbm, double(rgb2gray(imagen_previa)), double(rgb2gray(frame)));
+        Vx = real(mode(mode(motion)));
+        Vy = imag(mode(mode(motion)));
+        frame = imtranslate(frame,[-Vx -Vy]);
+        auxframe=frame;
         
 
         
@@ -136,7 +159,7 @@ function m4_week5_task1()
 %         mask = imopen(mask, strel('rectangle', [3,3]));
 %         mask = imclose(mask, strel('rectangle', [15, 15]));
 %         mask = imfill(mask, 'holes');
-        [mask,params] = adaptative_model(frame,params);
+        [mask,params] = adaptative_model(frame,imagen_previa,params);
 
         % Perform blob analysis to find connected components.
         [~, centroids, bboxes] = obj.blobAnalyser.step(mask);
