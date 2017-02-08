@@ -1,6 +1,6 @@
 # Video Surveillance for Road Traffic Monitoring
 
-**Objectives:** The goal of this project is to learn the basic concepts and techniques related to video sequences
+<p align="justify">**Objectives:** The goal of this project is to learn the basic concepts and techniques related to video sequences
 processing, mainly for surveillance applications. We will focus on video sequences
 from outdoor scenarios, with the application of traffic monitoring in mind. The main
 techniques of video processing will be applied in the context of video surveillance: moving
@@ -15,4 +15,4 @@ moving object segmentation, the development of optical flow estimation methods f
 motion compensation, and techniques for object tracking (ranging from simple blob
 analysis to more complex techniques based on filtering and probabilistic data association).
 The performance of the developed techniques will be measured using standard metrics for
-video analysis.
+video analysis.</p>
