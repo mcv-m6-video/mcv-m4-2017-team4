@@ -31,7 +31,7 @@ final Road traffic monitoring:</p>
 
 ## Documentation
 
-* [Slides of the project]()
+* Slides of the project [Google](https://docs.google.com/presentation/d/1DNsVoT-XT2LEUOhn_QynjGYYfrK_M1cEcURThYb2LZM/edit?usp=sharing), [PDF](Final Slides.pdf)
 * [Project Report]()
 
 ## Results obtained
